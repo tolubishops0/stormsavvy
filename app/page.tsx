@@ -9,14 +9,16 @@ import { observer, Observer } from "mobx-react-lite";
 import { ToastContainer } from "react-toastify";
 import Loader from "./Loader";
 
+import NavBar from "./components/NavBar/NavBar";
+
 type Props = {
   city: {};
 };
 
 const Page: React.FC = () => {
   useEffect(() => {}, []);
-  const {} = useGetCities();
-  const { getCityWeather } = useCurrentLocationWeather();
+  // const {} = useGetCities();
+  // const { getCityWeather } = useCurrentLocationWeather();
 
   const {
     userCityWeather,
@@ -35,11 +37,12 @@ const Page: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className=" mx-auto">
       <ToastContainer />
+      <NavBar />
       {isLoadingCurrLocWeather && <Loader />}
       {isCitiesLoading && <Loader />}
-      {isLoadingSelectedCity && <>...isLoadingCity</>}
+      {isLoadingSelectedCity && <Loader />}
       {selectedCityWeather && (
         <>
           <p>latitude:{selectedCityWeather.city.coord.lat}</p>

@@ -65,6 +65,7 @@ const useCurrentLocationWeather = () => {
         .catch((error) => {
           toast(error, error.message);
           setIsLoadingCurrLocWeather(false);
+          console.log(error.message);
         });
     }
   }, [currLocation]);
@@ -77,12 +78,15 @@ const useCurrentLocationWeather = () => {
       .then((response) => {
         setIsLoadingSelectedCity(false);
         setSelectedCityWeather(response.data);
-        weatherState.getSeletedCityWeather(response.data, isLoadingSelectedCity);
+        weatherState.getSeletedCityWeather(
+          response.data,
+          isLoadingSelectedCity
+        );
       })
       .catch((error) => {
         setIsLoadingSelectedCity(false);
         setError("Failed to fetch city weather data.");
-        toast(error.massage);
+        toast(error.message);
       });
   };
 
