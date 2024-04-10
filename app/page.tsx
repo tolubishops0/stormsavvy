@@ -22,11 +22,10 @@ const Page: React.FC = () => {
     userCityWeather,
     cities,
     selectedCityWeather,
-    isLoading,
-    isLoadingCity,
-    errors,
+    isCitiesLoading,
+    isLoadingSelectedCity,
+    isLoadingCurrLocWeather,
   } = weatherState;
-  console.log(isLoading);
 
   const getCityCoord = (city: {
     coordinates: { lon: number; lat: number };
@@ -38,8 +37,9 @@ const Page: React.FC = () => {
   return (
     <div>
       <ToastContainer />
-      {isLoading && <Loader />}
-      {isLoadingCity && <>...isLoadingCity</>}
+      {isLoadingCurrLocWeather && <Loader />}
+      {isCitiesLoading && <Loader />}
+      {isLoadingSelectedCity && <>...isLoadingCity</>}
       {selectedCityWeather && (
         <>
           <p>latitude:{selectedCityWeather.city.coord.lat}</p>

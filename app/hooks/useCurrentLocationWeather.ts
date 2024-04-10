@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import weatherState from "../State/WeatherState";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 type Coordinates = {
@@ -22,62 +22,67 @@ const useCurrentLocationWeather = () => {
     null
   );
 
-  const [isLoading, setisLoading] = useState(false);
-  const [isCityLoading, setIsCityLoading] = useState(false);
+  const [isLoadingCurrLocWeather, setIsLoadingCurrLocWeather] = useState(false);
+  const [isLoadingCurrLoc, setisLoadingCurrLoc] = useState(false);
+  const [isLoadingSelectedCity, setIsLoadingSelectedCity] = useState(false);
 
   useEffect(() => {
-    setisLoading(true);
+    setisLoadingCurrLoc(true);
     if (!navigator.geolocation) {
       setError("there is o geolocation");
-      console.log("on your geo");
+      setisLoadingCurrLoc(false);
       return;
     }
     const handleSuccess = (position: GeolocationPosition) => {
       setCurrLocation(position.coords);
-      setisLoading(false);
+      setisLoadingCurrLoc(false);
     };
 
     const handleError = (error: GeolocationPositionError) => {
       setError(error.message);
-      setisLoading(false);
+      setisLoadingCurrLoc(false);
       toast("please enable your location");
     };
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError);
   }, []);
 
   useEffect(() => {
-    setisLoading(true);
     if (currLocation) {
+      setIsLoadingCurrLocWeather(true);
       const latitude = currLocation.latitude;
       const longitude = currLocation.longitude;
       const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&cnt=5`;
       axios
         .get(url)
         .then((response) => {
-          setisLoading(false);
+          setIsLoadingCurrLocWeather(false);
           setLocationCurrweather(response.data);
-          weatherState.currentUserCityWeather(response.data, isLoading);
+          weatherState.currentUserCityWeather(
+            response.data,
+            isLoadingCurrLocWeather
+          );
         })
         .catch((error) => {
           toast(error, error.message);
-          setisLoading(false);
+          setIsLoadingCurrLocWeather(false);
         });
     }
   }, [currLocation]);
 
   const getCityWeather = (latitude: number, longitude: number) => {
-    setIsCityLoading(true);
+    setIsLoadingSelectedCity(true);
     const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&cnt=5`;
     axios
       .get(url)
       .then((response) => {
-        setIsCityLoading(false);
+        setIsLoadingSelectedCity(false);
         setSelectedCityWeather(response.data);
-        weatherState.getSeletedCityWeather(response.data, isCityLoading);
+        weatherState.getSeletedCityWeather(response.data, isLoadingSelectedCity);
       })
       .catch((error) => {
-        setIsCityLoading(false);
+        setIsLoadingSelectedCity(false);
         setError("Failed to fetch city weather data.");
+        toast(error.massage);
       });
   };
 

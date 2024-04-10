@@ -10,8 +10,10 @@ class WeatherState {
   userCityWeather: DataTypes | null = null;
   cities: DataTypes | [] = [];
   selectedCityWeather: DataTypes | null = null;
-  isLoading = false;
-  isLoadingCity = false;
+
+  isLoadingCurrLocWeather = false;
+  isCitiesLoading = false;
+  isLoadingSelectedCity = false;
   errors: DataTypes | null = null;
 
   constructor() {
@@ -20,23 +22,23 @@ class WeatherState {
 
   currentUserCityWeather = async (
     weatherData: DataTypes,
-    isLoading: boolean,
+    isLoadingCurrLocWeather: boolean
   ) => {
     this.userCityWeather = weatherData;
-    this.isLoading = true;
+    this.isLoadingCurrLocWeather = isLoadingCurrLocWeather;
   };
 
-  getCities = async (cities: DataTypes, isLoading: boolean) => {
+  getCities = async (cities: DataTypes, isCitiesLoading: boolean) => {
     this.cities = cities;
-    this.isLoading = true;
+    this.isCitiesLoading = isCitiesLoading;
   };
 
   getSeletedCityWeather = async (
     weatherData: DataTypes,
-    isLoadingCity: boolean
+    isLoadingSelectedCity: boolean
   ) => {
     this.selectedCityWeather = weatherData;
-    this.isLoadingCity = isLoadingCity;
+    this.isLoadingSelectedCity = isLoadingSelectedCity;
   };
 }
 
