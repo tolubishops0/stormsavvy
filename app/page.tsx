@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import Loader from "./Loader";
 
 import NavBar from "./components/NavBar/NavBar";
+import CityList from "./components/CityList/CityList";
 
 type Props = {
   city: {};
@@ -18,7 +19,7 @@ type Props = {
 const Page: React.FC = () => {
   useEffect(() => {}, []);
   // const {} = useGetCities();
-  // const { getCityWeather } = useCurrentLocationWeather();
+  const { getCityWeather } = useCurrentLocationWeather();
 
   const {
     userCityWeather,
@@ -37,9 +38,9 @@ const Page: React.FC = () => {
   };
 
   return (
-    <div className=" mx-auto">
+    <div className="w-[90%] mx-auto">
       <ToastContainer />
-      <NavBar />
+      <CityList />
       {isLoadingCurrLocWeather && <Loader />}
       {isCitiesLoading && <Loader />}
       {isLoadingSelectedCity && <Loader />}
@@ -55,12 +56,12 @@ const Page: React.FC = () => {
           {userCityWeather.list[0].weather[0].description} today
         </h2>
       )}
-      {cities &&
+      {/* {cities &&
         cities.map((city, index) => (
           <h6 onClick={() => getCityCoord(city)} key={index}>
             {city.name}
           </h6>
-        ))}
+        ))} */}
     </div>
   );
 };

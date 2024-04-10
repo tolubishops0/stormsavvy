@@ -18,7 +18,7 @@ export default function ThemeSwitch() {
       <Image
         style={{
           cursor: "pointer",
-          position: "absolute",
+          position: "fixed",
           top: "50%",
           right: "0",
         }}

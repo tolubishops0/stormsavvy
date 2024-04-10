@@ -10,7 +10,6 @@ const useGetCities = () => {
   const [error, setError] = useState<string | null>(null);
   const [isCitiesLoading, setisCitiesLoading] = useState(false);
   const { userCityWeather } = weatherState;
-  
 
   useEffect(() => {
     if (userCityWeather) {
@@ -22,6 +21,7 @@ const useGetCities = () => {
           setisCitiesLoading(false);
           setCities(response.data.results);
           weatherState.getCities(response.data.results, isCitiesLoading);
+          console.log(response.data.results);
         })
         .catch((error) => {
           setError(error.massage);
