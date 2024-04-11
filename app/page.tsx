@@ -30,38 +30,10 @@ const Page: React.FC = () => {
     isLoadingCurrLocWeather,
   } = weatherState;
 
-  const getCityCoord = (city: {
-    coordinates: { lon: number; lat: number };
-  }) => {
-    const { lon, lat } = city.coordinates;
-    getCityWeather(lat, lon);
-  };
-
   return (
     <div className="w-[90%] mx-auto">
       <ToastContainer />
       <CityList />
-      {isLoadingCurrLocWeather && <Loader />}
-      {isCitiesLoading && <Loader />}
-      {isLoadingSelectedCity && <Loader />}
-      {selectedCityWeather && (
-        <>
-          <p>latitude:{selectedCityWeather.city.coord.lat}</p>
-          <p>longitude:{selectedCityWeather.city.coord.lon}</p>
-        </>
-      )}
-      {userCityWeather && (
-        <h2>
-          your city is :{userCityWeather.city.name} and it is a{" "}
-          {userCityWeather.list[0].weather[0].description} today
-        </h2>
-      )}
-      {/* {cities &&
-        cities.map((city, index) => (
-          <h6 onClick={() => getCityCoord(city)} key={index}>
-            {city.name}
-          </h6>
-        ))} */}
     </div>
   );
 };

@@ -28,9 +28,10 @@ class WeatherState {
     this.isLoadingCurrLocWeather = isLoadingCurrLocWeather;
   };
 
-  getCities = async (cities: DataTypes, isCitiesLoading: boolean) => {
+  getCities = async (cities: DataTypes) => {
     this.cities = cities;
-    this.isCitiesLoading = isCitiesLoading;
+    // this.isCitiesLoading = isCitiesLoading;
+    // console.log(isCitiesLoading, "from state");
   };
 
   getSeletedCityWeather = async (

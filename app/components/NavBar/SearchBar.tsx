@@ -44,7 +44,7 @@ const SearchBar = observer(({ cityList }: Props) => {
   };
 
   return (
-    <div className="w-[40%]">
+    // <div className="w-[40%] ">
       <ReactSearchAutocomplete
         onSelect={handleOnSelect}
         onSearch={setSearchCity}
@@ -53,7 +53,7 @@ const SearchBar = observer(({ cityList }: Props) => {
         items={cityList}
         placeholder="type to search"
       />
-    </div>
+    // </div>
   );
 });
 
