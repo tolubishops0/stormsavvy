@@ -51,7 +51,8 @@ const useCurrentLocationWeather = () => {
       setIsLoadingCurrLocWeather(true);
       const latitude = currLocation.latitude;
       const longitude = currLocation.longitude;
-      const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&cnt=5`;
+      // const url = `https://api.openweathermap.org/data/2.5/forcast?q=${cityname}&appid=${apiKey}&cnt=5&units=metric`;
+      const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&cnt=5&units=metric`;
       axios
         .get(url)
         .then((response) => {
@@ -65,11 +66,11 @@ const useCurrentLocationWeather = () => {
         .catch((error) => {
           toast(error, error.message);
           setIsLoadingCurrLocWeather(false);
-          console.log(error.message);
         });
     }
   }, [currLocation]);
 
+  // const getCityWeather = (cityname: string) => {
   const getCityWeather = (latitude: number, longitude: number) => {
     setIsLoadingSelectedCity(true);
     const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&cnt=5`;

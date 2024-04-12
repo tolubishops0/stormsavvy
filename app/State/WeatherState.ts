@@ -10,7 +10,6 @@ class WeatherState {
   userCityWeather: DataTypes | null = null;
   cities: DataTypes | [] = [];
   selectedCityWeather: DataTypes | null = null;
-
   isLoadingCurrLocWeather = false;
   isCitiesLoading = false;
   isLoadingSelectedCity = false;

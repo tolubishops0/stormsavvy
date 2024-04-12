@@ -8,7 +8,7 @@ type Props = {
   children: any;
 };
 
-function ContextMenu({ x, y, onCloseContextMenu, parentRef, children }: Props) {
+function ContextMenuTemp({ x, y, onCloseContextMenu, parentRef, children }: Props) {
   const menuStyle = {
     top: `${y}px`,
     left: `${x}px`,
@@ -37,4 +37,4 @@ function ContextMenu({ x, y, onCloseContextMenu, parentRef, children }: Props) {
   );
 }
 
-export default ContextMenu;
+export default ContextMenuTemp;

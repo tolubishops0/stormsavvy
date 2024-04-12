@@ -5,23 +5,30 @@ import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { observer } from "mobx-react-lite";
 import useCurrentLocationWeather from "@/app/hooks/useCurrentLocationWeather";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 
 type Props = {
   cityList: any[];
+  onSelect: any;
 };
 
-const SearchBar = observer(({ cityList }: Props) => {
+const SearchBar = observer(({ cityList, onSelect }: Props) => {
   const { resolvedTheme } = useTheme();
   const { getCityWeather } = useCurrentLocationWeather();
   const [searchCity, setSearchCity] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [cord, setCord] = useState({
+    lon: null,
+    lat: null,
+    cityName: null,
+  });
 
   const handleOnSelect = (city: {
     coordinates: { lon: number; lat: number };
   }) => {
-    // console.log(city.coordinates, "selected city");
     const { lon, lat } = city.coordinates;
-    getCityWeather(lat, lon);
+    const cityName = city.name;
+    onSelect(lon, lat, cityName);
   };
 
   useEffect(() => {
@@ -33,7 +40,7 @@ const SearchBar = observer(({ cityList }: Props) => {
   const styling = {
     border: resolvedTheme === "dark" ? "1px solid #fff" : "1px solid #000",
     borderRadius: "5px",
-    backgroundColor: "transparent",
+    backgroundColor: "#f8f8f8",
     boxShadow: "none",
     hoverBackgroundColor: "#f2f2f2",
     color: "#000",
@@ -44,16 +51,14 @@ const SearchBar = observer(({ cityList }: Props) => {
   };
 
   return (
-    // <div className="w-[40%] ">
-      <ReactSearchAutocomplete
-        onSelect={handleOnSelect}
-        onSearch={setSearchCity}
-        value={searchCity}
-        styling={styling}
-        items={cityList}
-        placeholder="type to search"
-      />
-    // </div>
+    <ReactSearchAutocomplete
+      onSelect={handleOnSelect}
+      onSearch={setSearchCity}
+      value={searchCity}
+      styling={styling}
+      items={cityList}
+      placeholder="type to search"
+    />
   );
 });
 
