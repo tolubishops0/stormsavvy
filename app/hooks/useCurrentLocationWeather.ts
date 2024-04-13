@@ -24,7 +24,11 @@ const useCurrentLocationWeather = () => {
 
   const [isLoadingCurrLocWeather, setIsLoadingCurrLocWeather] = useState(false);
   const [isLoadingCurrLoc, setisLoadingCurrLoc] = useState(false);
-  const [isLoadingSelectedCity, setIsLoadingSelectedCity] = useState(false);
+  const [isLoadingSelectedCityWeather, setisLoadingSelectedCityWeather] =
+    useState(false);
+
+  // const [selectedCityWeatherCoord, setSelectedCityWeatherCoord] =
+  useState<Coordinates | null>(null);
 
   useEffect(() => {
     setisLoadingCurrLoc(true);
@@ -44,6 +48,12 @@ const useCurrentLocationWeather = () => {
       toast("please enable your location");
     };
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError);
+
+    const locationUpdate = setInterval(() => {
+      navigator.geolocation.getCurrentPosition(handleSuccess, handleError);
+    }, 30000);
+
+    return () => clearInterval(locationUpdate);
   }, []);
 
   useEffect(() => {
@@ -70,25 +80,48 @@ const useCurrentLocationWeather = () => {
     }
   }, [currLocation]);
 
-  // const getCityWeather = (cityname: string) => {
   const getCityWeather = (latitude: number, longitude: number) => {
-    setIsLoadingSelectedCity(true);
+    setisLoadingSelectedCityWeather(true);
     const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&cnt=5`;
-    axios
-      .get(url)
-      .then((response) => {
-        setIsLoadingSelectedCity(false);
-        setSelectedCityWeather(response.data);
-        weatherState.getSeletedCityWeather(
-          response.data,
-          isLoadingSelectedCity
-        );
-      })
-      .catch((error) => {
-        setIsLoadingSelectedCity(false);
-        setError("Failed to fetch city weather data.");
-        toast(error.message);
-      });
+    // axios
+    //   .get(url)
+    //   .then((response) => {
+    //     setisLoadingSelectedCityWeather(false);
+    //     setSelectedCityWeather(response.data);
+    //     weatherState.getSeletedCityWeather(
+    //       response.data,
+    //       isLoadingSelectedCityWeather
+    //     );
+    //   })
+    //   .catch((error) => {
+    //     setisLoadingSelectedCityWeather(false);
+    //     setError("Failed to fetch city weather data.");
+    //     toast(error.message);
+    //   });
+
+    const fetchWeatherData = () => {
+      axios
+        .get(url)
+        .then((response) => {
+          setisLoadingSelectedCityWeather(false);
+          setSelectedCityWeather(response.data);
+          weatherState.getSeletedCityWeather(
+            response.data,
+            isLoadingSelectedCityWeather
+          );
+        })
+        .catch((error) => {
+          setisLoadingSelectedCityWeather(false);
+          setError("Failed to fetch city weather data.");
+          toast(error.message);
+        });
+    };
+
+    fetchWeatherData();
+
+    const getCityWeatherInterval = setInterval(fetchWeatherData, 120000);
+
+    return () => clearInterval(getCityWeatherInterval);
   };
 
   return { currLocationweather, selectedCityWeather, error, getCityWeather };

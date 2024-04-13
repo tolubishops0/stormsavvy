@@ -11,6 +11,7 @@ import useCurrentLocationWeather from "@/app/hooks/useCurrentLocationWeather";
 import Link from "next/link";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import Image from "next/image";
+import NavBar from "../NavBar/NavBar";
 
 const initialContextMenu = {
   show: false,
@@ -82,7 +83,7 @@ const CityList = observer(({ show, y, x }: Props) => {
               onCloseContextMenu={onCloseContextMenu}
               y={showContextMenu.y}
               x={showContextMenu.x}>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 ">
                 {" "}
                 {contextMenuItems.map((city, index) => (
                   <div

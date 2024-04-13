@@ -10,6 +10,7 @@ import Image from "next/image";
 import { format, parseISO } from "date-fns";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
+import Link from "next/link";
 import sunrise from "../assest/icons8-sun-48.png";
 import sunset from "../assest/icons8-sunset-48.png";
 import humid from "../assest/icons8-humidity-48.png";
@@ -19,6 +20,7 @@ import pressure from "../assest/icons8-pressure-48.png";
 import arrow from "../assest/icons8-right-arrow-30.png";
 import convert from "../assest/icons8-convert-48.png";
 import ContextMenuTemp from "../components/ContextMenu/ContextMenuTemp";
+import NavBar from "../components/NavBar/NavBar";
 
 const initialContextMenu = {
   show: false,
@@ -42,7 +44,7 @@ const WeatherDetail = observer(({}: Props) => {
     userCityWeather,
     selectedCityWeather,
     isLoadingCurrLocWeather,
-    isLoadingSelectedCity,
+    isLoadingSelectedCityWeather,
   } = weatherState;
 
   const searchParams = useSearchParams();
@@ -91,20 +93,13 @@ const WeatherDetail = observer(({}: Props) => {
     }
   }, [lon, lat]);
 
-  // useEffect(() => {
-  //   if (cityname) {
-  //     getCityWeather(cityname);
-  //     // getCityWeather(Number(lon), Number(lat));
-  //   }
-  // }, [cityname]);
-
   useEffect(() => {
     if (from === "user") {
       if (userCityWeather?.list) {
         setList(userCityWeather.list);
         setcityName(userCityWeather?.city);
       }
-    } else if (selectedCityWeather?.list) {
+    } else {
       setList(selectedCityWeather?.list);
       setcityName(selectedCityWeather?.city);
     }
@@ -144,179 +139,196 @@ const WeatherDetail = observer(({}: Props) => {
   };
 
   return (
-    <div className="w-[90%] mx-auto mb-8">
-      {showContextMenu.show && (
-        <ContextMenuTemp
-          parentRef={textAreaRef}
-          onCloseContextMenu={onCloseContextMenu}
-          y={showContextMenu.y}
-          x={showContextMenu.x}>
-          <div className="flex flex-col gap-3">
-            {" "}
-            {contextMenuItems.map((temp, index) => (
-              <div
-                className="flex gap-1 items-center cursor-pointer"
-                key={index}>
-                <p
-                  onClick={() => {
-                    setselectedTemp(temp.value);
-                    onCloseContextMenu();
-                  }}>
-                  {temp.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </ContextMenuTemp>
-      )}
-      <div
-        ref={textAreaRef}
-        onClick={(e) => {
-          openContextMenu(e);
-        }}
-        className="fixed top-[50%] left-0 cursor-pointer">
-        {" "}
-        <Image src={convert} alt="convert-icon" />
-      </div>
-      {isLoadingCurrLocWeather || isLoadingSelectedCity ? (
-        <Loader />
-      ) : (
-        <div className="flex flex-col md:flex-row">
-          <div className="flex flex-col md:flex-row items-center justify-center ">
-            {list?.length > 0 && (
-              <>
-                <div className="flex flex-col justify-center items-center">
-                  <img
-                    className="w-[90%]"
-                    src={`https://openweathermap.org/img/wn/${list[0].weather[0].icon}@2x.png`}
-                    alt={list[0]?.weather[0].description}
-                  />
+    <>
+      <div className="w-[90%] mx-auto mb-8">
+        {showContextMenu.show && (
+          <ContextMenuTemp
+            parentRef={textAreaRef}
+            onCloseContextMenu={onCloseContextMenu}
+            y={showContextMenu.y}
+            x={showContextMenu.x}>
+            <div className="flex flex-col gap-3">
+              {" "}
+              {contextMenuItems.map((temp, index) => (
+                <div
+                  className="flex gap-1 items-center cursor-pointer"
+                  key={index}>
+                  <p
+                    onClick={() => {
+                      setselectedTemp(temp.value);
+                      onCloseContextMenu();
+                    }}>
+                    {temp.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </ContextMenuTemp>
+        )}
+        <div
+          ref={textAreaRef}
+          onClick={(e) => {
+            openContextMenu(e);
+          }}
+          className="fixed top-[50%] left-0 cursor-pointer">
+          {" "}
+          <Image src={convert} alt="convert-icon" />
+        </div>
+        {isLoadingCurrLocWeather || isLoadingSelectedCityWeather ? (
+          <Loader />
+        ) : (
+          <div className="flex flex-col md:flex-row">
+            <div className="flex flex-col md:flex-row items-center justify-center ">
+              {list?.length > 0 && (
+                <>
+                  <div className="flex flex-col justify-center items-center">
+                    <img
+                      className="w-[90%]"
+                      src={`https://openweathermap.org/img/wn/${list[0].weather[0].icon}@2x.png`}
+                      alt={list[0]?.weather[0].description}
+                    />
 
-                  <div className="flex flex-col gap-3 items-center justify-center">
-                    {" "}
-                    <p className="text-5xl font-black bg-gradient-to-b from-white to-gray-700 text-transparent bg-clip-text">
-                      {convertTemperature(list[0]?.main?.temp, selectedTemp)}
-                    </p>
-                    <p className="capitalize text-4xl font-normal">
-                      {cityName?.name || cityname}
-                    </p>
-                    <p className="capitalize text-2xl font-base">
-                      {list[0]?.weather[0].description}
-                    </p>
-                    <p className="capitalize text-base font-base text-slate-300">
-                      {formatDate(list[0]?.dt_txt)}
-                    </p>
+                    <div className="flex flex-col gap-3 items-center justify-center">
+                      {" "}
+                      <p className="text-5xl font-black bg-gradient-to-b from-white to-gray-700 text-transparent bg-clip-text">
+                        {convertTemperature(list[0]?.main?.temp, selectedTemp)}
+                      </p>
+                      <p className="capitalize text-4xl font-normal">
+                        {cityName?.name || cityname}
+                      </p>
+                      <p className="capitalize text-2xl font-base">
+                        {list[0]?.weather[0].description}
+                      </p>
+                      <p className="capitalize text-base font-base text-slate-300">
+                        {formatDate(list[0]?.dt_txt)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-center gap-1 my-8">
+                    <Link
+                      href={{
+                        pathname: "/forecasts",
+                        query: {
+                          lon,
+                          lat,
+                          name: cityName?.name || cityname,
+                          from: from === "user" ? "user" : "city",
+                        },
+                      }}>
+                      {" "}
+                      <p className="font-normal text-base text-white cursor-pointer">
+                        View more forecast
+                      </p>
+                    </Link>
+
+                    <Image src={arrow} alt="arrow" />
+                  </div>
+                </>
+              )}
+            </div>
+            {list?.length > 1 && (
+              <div className="flex flex-col ">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex item-center gap-2 justify-start">
+                      <Image src={sunrise} alt="sunrise" />
+                      <span className="flex flex-col item-center gap-2 justify-start">
+                        <p className="font-normal text-base text-slate-300">
+                          {" "}
+                          Sunrise
+                        </p>
+                        <p className="font-semibold text-lg">
+                          {" "}
+                          {formatTime(cityName?.sunrise, cityName?.timezone)}
+                        </p>
+                      </span>
+                    </div>
+                    <div className="flex item-baseline gap-2 justify-start">
+                      <Image src={sunset} alt="sunset" />
+                      <span className="flex flex-col item-center gap-2 justify-start">
+                        <p className="font-normal text-base text-slate-300">
+                          {" "}
+                          Sunset
+                        </p>
+                        <p className="font-semibold text-lg">
+                          {" "}
+                          {formatTime(cityName?.sunset, cityName?.timezone)}
+                        </p>
+                      </span>
+                    </div>
+                  </div>
+                  <hr className="flex-grow border-t border-gray-300  my-5"></hr>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex item-center gap-2 justify-start">
+                      <Image src={humid} alt="sunrise" />
+                      <span className="flex flex-col item-center gap-1 justify-start">
+                        <p className="font-normal text-base text-slate-300">
+                          {" "}
+                          Humid
+                        </p>
+                        <p className="font-semibold text-lg">
+                          {list[0]?.main?.humidity}%
+                        </p>
+                      </span>
+                    </div>
+                    <div className="flex item-baseline gap-2 justify-start">
+                      <Image src={face} alt="sunset" />
+                      <span className="flex flex-col item-center gap-2 justify-start">
+                        <p className="font-normal text-base text-slate-300">
+                          {" "}
+                          Feels like
+                        </p>
+                        <p className="font-semibold text-lg">
+                          {" "}
+                          {convertTemperature(
+                            list[0]?.main?.feels_like,
+                            selectedTemp
+                          )}
+                        </p>
+                      </span>
+                    </div>
+                  </div>
+                  <hr className="flex-grow border-t border-gray-300  my-5"></hr>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex item-center gap-2 justify-start">
+                      <Image src={pressure} alt="sunrise" />
+                      <span className="flex flex-col item-center gap-1 justify-start">
+                        <p className="font-normal text-base text-slate-300">
+                          {" "}
+                          Pressure
+                        </p>
+                        <p className="font-semibold text-lg">
+                          {list[0]?.main?.humidity}hPa
+                        </p>
+                      </span>
+                    </div>
+                    <div className="flex item-baseline gap-2 justify-start">
+                      <Image src={wind} alt="sunset" />
+                      <span className="flex flex-col item-center gap-2 justify-start">
+                        <p className="font-normal text-base text-slate-300">
+                          {" "}
+                          Wind
+                        </p>
+                        <p className="font-semibold text-lg">
+                          {" "}
+                          {list[0]?.main?.speed}m/s
+                        </p>
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-1 my-8">
-                  <p className="font-normal text-base text-white">Next Days</p>
-                  <Image src={arrow} alt="arrow" />
-                </div>
-              </>
+              </div>
             )}
           </div>
-          {list.length > 1 && (
-            <div className="flex flex-col ">
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="flex item-center gap-2 justify-start">
-                    <Image src={sunrise} alt="sunrise" />
-                    <span className="flex flex-col item-center gap-2 justify-start">
-                      <p className="font-normal text-base text-slate-300">
-                        {" "}
-                        Sunrise
-                      </p>
-                      <p className="font-semibold text-lg">
-                        {" "}
-                        {formatTime(cityName?.sunrise, cityName?.timezone)}
-                      </p>
-                    </span>
-                  </div>
-                  <div className="flex item-baseline gap-2 justify-start">
-                    <Image src={sunset} alt="sunset" />
-                    <span className="flex flex-col item-center gap-2 justify-start">
-                      <p className="font-normal text-base text-slate-300">
-                        {" "}
-                        Sunset
-                      </p>
-                      <p className="font-semibold text-lg">
-                        {" "}
-                        {formatTime(cityName?.sunset, cityName?.timezone)}
-                      </p>
-                    </span>
-                  </div>
-                </div>
-                <hr className="flex-grow border-t border-gray-300  my-5"></hr>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="flex item-center gap-2 justify-start">
-                    <Image src={humid} alt="sunrise" />
-                    <span className="flex flex-col item-center gap-1 justify-start">
-                      <p className="font-normal text-base text-slate-300">
-                        {" "}
-                        Humid
-                      </p>
-                      <p className="font-semibold text-lg">
-                        {list[0]?.main?.humidity}%
-                      </p>
-                    </span>
-                  </div>
-                  <div className="flex item-baseline gap-2 justify-start">
-                    <Image src={face} alt="sunset" />
-                    <span className="flex flex-col item-center gap-2 justify-start">
-                      <p className="font-normal text-base text-slate-300">
-                        {" "}
-                        Feels like
-                      </p>
-                      <p className="font-semibold text-lg">
-                        {" "}
-                        {convertTemperature(
-                          list[0]?.main?.feels_like,
-                          selectedTemp
-                        )}
-                      </p>
-                    </span>
-                  </div>
-                </div>
-                <hr className="flex-grow border-t border-gray-300  my-5"></hr>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="flex item-center gap-2 justify-start">
-                    <Image src={pressure} alt="sunrise" />
-                    <span className="flex flex-col item-center gap-1 justify-start">
-                      <p className="font-normal text-base text-slate-300">
-                        {" "}
-                        Pressure
-                      </p>
-                      <p className="font-semibold text-lg">
-                        {list[0]?.main?.humidity}hPa
-                      </p>
-                    </span>
-                  </div>
-                  <div className="flex item-baseline gap-2 justify-start">
-                    <Image src={wind} alt="sunset" />
-                    <span className="flex flex-col item-center gap-2 justify-start">
-                      <p className="font-normal text-base text-slate-300">
-                        {" "}
-                        Wind
-                      </p>
-                      <p className="font-semibold text-lg">
-                        {" "}
-                        {list[0]?.main?.speed}m/s
-                      </p>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 });
 export default WeatherDetail;

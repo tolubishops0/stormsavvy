@@ -59,7 +59,7 @@ const NavBar = observer(() => {
     },
   ];
 
-  const handleCitySelection = (lon, lat, name) => {
+  const handleCitySelection = (lon:number, lat:number, name:number) => {
     const url = `/weather?lon=${lon}&lat=${lat}&from=city&name=${name}`;
 
     window.location.href = url;
