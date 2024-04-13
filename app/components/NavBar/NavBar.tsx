@@ -11,6 +11,7 @@ import newTab from "../../assest/new tab.png";
 import { toJS } from "mobx";
 import ContextNavBar from "../ContextMenu/ContextNavBar";
 import Link from "next/link";
+import useCurrentLocationWeather from "@/app/hooks/useCurrentLocationWeather";
 
 const initialContextMenu = {
   show: false,
@@ -28,6 +29,7 @@ type Props = {
 
 const NavBar = observer(() => {
   const { cities, userCityWeather } = weatherState;
+  const {} = useCurrentLocationWeather;
   const { lat, lon } = userCityWeather?.city?.coord || {};
 
   const [showContextMenu, setShowContextMenu] = useState(initialContextMenu);
@@ -59,11 +61,10 @@ const NavBar = observer(() => {
     },
   ];
 
-  const handleCitySelection = (lon:number, lat:number, name:number) => {
+  const handleCitySelection = (lon: number, lat: number, name: number) => {
     const url = `/weather?lon=${lon}&lat=${lat}&from=city&name=${name}`;
 
     window.location.href = url;
-    
   };
 
   const openContextMenu = (e: any, name: string) => {

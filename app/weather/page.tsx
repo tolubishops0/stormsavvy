@@ -28,6 +28,15 @@ const initialContextMenu = {
   y: 0,
 };
 
+type tableData = {
+  temp: number;
+  sunrise: number;
+  sunset: number;
+  description: string;
+  name: string;
+  timeZone: number
+};
+
 type Props = {
   lon: Number;
   lat: Number;
@@ -52,11 +61,13 @@ const WeatherDetail = observer(({}: Props) => {
   const lat = searchParams.get("lat");
   const from = searchParams.get("from");
   const cityname = searchParams.get("name");
+  // console.log(cityname, "from city name weather");
 
   const [list, setList] = useState([]);
   const [cityName, setcityName] = useState("");
   const [selectedTemp, setselectedTemp] = useState("C");
 
+  const [viewdTableData, setviewdTableData] = useState<tableData | null>(null);
   const [showContextMenu, setShowContextMenu] = useState(initialContextMenu);
   const textAreaRef = useRef();
 
@@ -88,10 +99,11 @@ const WeatherDetail = observer(({}: Props) => {
   }
 
   useEffect(() => {
-    if (lon && lat) {
-      getCityWeather(Number(lon), Number(lat));
+    if (cityname) {
+      console.log("city name is changed");
+      getCityWeather(cityname);
     }
-  }, [lon, lat]);
+  }, [cityname]);
 
   useEffect(() => {
     if (from === "user") {
@@ -102,15 +114,40 @@ const WeatherDetail = observer(({}: Props) => {
     } else {
       setList(selectedCityWeather?.list);
       setcityName(selectedCityWeather?.city);
+      addViewedCity(selectedCityWeather);
     }
   }, [userCityWeather, selectedCityWeather]);
+
+  const addViewedCity = (selectedCityWeather: []) => {
+    console.log(toJS(selectedCityWeather), "selected weather");
+    const newViewedCityData = {
+      name: selectedCityWeather?.city?.name || null,
+      temp: selectedCityWeather?.list[0]?.main?.temp || null,
+      sunrise: selectedCityWeather?.city?.sunrise || null,
+      sunset: selectedCityWeather?.city?.sunset || null,
+      description:
+        selectedCityWeather?.list[0]?.weather[0]?.description || null,
+      timeZone: selectedCityWeather?.city?.timezone || null,
+    };
+    const viewedCitiesloaclstorage = localStorage.getItem("viewed-cities");
+    const viewedCities = JSON.parse(viewedCitiesloaclstorage) || [];
+
+    const isAlreadyViewed = viewedCities.some(
+      (city) => city.name === newViewedCityData.name
+    );
+
+    if (!isAlreadyViewed) {
+      viewedCities.push(newViewedCityData);
+      localStorage.setItem("viewed-cities", JSON.stringify(viewedCities));
+    }
+  };
 
   const formatDate = (dateString) => {
     const options = {
       weekday: "long",
       hour: "numeric",
       minute: "numeric",
-      hour12: false,
+      hour12: true,
     };
     return new Date(dateString).toLocaleString("en-US", options);
   };
@@ -119,7 +156,7 @@ const WeatherDetail = observer(({}: Props) => {
     const options = {
       hour: "numeric",
       minute: "numeric",
-      hour12: false,
+      hour12: true,
       timeZone: "UTC",
     };
 
@@ -177,8 +214,8 @@ const WeatherDetail = observer(({}: Props) => {
         {isLoadingCurrLocWeather || isLoadingSelectedCityWeather ? (
           <Loader />
         ) : (
-          <div className="flex flex-col md:flex-row">
-            <div className="flex flex-col md:flex-row items-center justify-center ">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+            <div className="flex flex-col items-center justify-center w-[100%] md:w-[50%]">
               {list?.length > 0 && (
                 <>
                   <div className="flex flex-col justify-center items-center">
@@ -227,7 +264,7 @@ const WeatherDetail = observer(({}: Props) => {
               )}
             </div>
             {list?.length > 1 && (
-              <div className="flex flex-col ">
+              <div className="flex flex-col w-[100%] md:w-[50%]">
                 <div>
                   <div className="flex items-center justify-between">
                     <div className="flex item-center gap-2 justify-start">

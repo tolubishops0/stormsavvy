@@ -39,7 +39,7 @@ class WeatherState {
   ) => {
     this.selectedCityWeather = weatherData;
     this.isLoadingSelectedCityWeather = isLoadingSelectedCityWeather;
-    console.log(isLoadingSelectedCityWeather)
+    // console.log(weatherData);
   };
 }
 

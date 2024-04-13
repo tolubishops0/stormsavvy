@@ -1,7 +1,7 @@
 "use client";
 
 import { observer } from "mobx-react-lite";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import weatherState from "@/app/State/WeatherState";
 import { toJS } from "mobx";
 import useGetCities from "@/app/hooks/UseGetCity";
@@ -29,10 +29,20 @@ const CityList = observer(({ show, y, x }: Props) => {
   const { isCitiesLoading } = useGetCities();
   const { cities } = weatherState;
 
+  const [viewedCities, setViewedCities] = useState([]);
   const [showContextMenu, setShowContextMenu] = useState(initialContextMenu);
   const [selectedCity, setSelectedCity] = useState("");
   const textAreaRef = useRef();
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const foreCastData =
+        JSON.parse(localStorage.getItem("viewed-cities") || '"') || null;
+      setViewedCities(foreCastData);
+    }
+  }, []);
+
+  const mergedCities = [...cities, ...viewedCities];
   const contextMenuItems = [
     {
       id: 0,
@@ -71,6 +81,20 @@ const CityList = observer(({ show, y, x }: Props) => {
     setShowContextMenu(initialContextMenu);
     setSelectedCity("");
   };
+  
+
+  const formatTime = (timeString, timezone) => {
+    const options = {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+      timeZone: "UTC",
+    };
+
+    const timeMilliseconds = timeString * 1000 + timezone * 1000;
+
+    return new Date(timeMilliseconds).toLocaleString("en-US", options);
+  };
 
   return (
     <>
@@ -101,53 +125,96 @@ const CityList = observer(({ show, y, x }: Props) => {
             </ContextMenu>
           )}
           <div className="py-8 overflow-y-auto overflow-x-auto no-scrollbar h-[80vh] overscroll-contain">
-            <table
-              ref={textAreaRef}
-              className=" mx-auto table-fixed border border-spacing-2 border-separate p-4 scroll-smooth ">
-              <thead>
-                <tr>
-                  <th className="border text-left text-yellow-700 p-4 w-1/4">
-                    City
-                  </th>
-                  <th className="border text-left text-yellow-700 p-4 w-1/4 ">
-                    Time
-                  </th>
-                  <th className="border text-left text-yellow-700 p-4 w-1/4">
-                    Country
-                  </th>
-                  <th className="border text-left text-yellow-700 p-4 w-1/4">
-                    Population
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {cities?.map((city: any, index: number) => (
-                  <tr key={index}>
-                    <td
-                      className="border p-2 w-1/4 "
-                      onContextMenu={(e) =>
-                        openContextMenu(e, city.name, city)
-                      }>
-                      <Link
-                        href={{
-                          pathname: "/weather",
-                          query: {
-                            lon: city?.coordinates?.lon,
-                            lat: city?.coordinates?.lat,
-                            from: "city",
-                            name: city?.name,
-                          },
-                        }}>
-                        {city.name}
-                      </Link>
-                    </td>
-                    <td className="border p-4 w-1/4 ">{city.timezone}</td>
-                    <td className="border p-4 w-1/4 ">{city.cou_name_en}</td>
-                    <td className="border p-4 w-1/4 ">{city.population}</td>
+            {mergedCities && (
+              <table
+                ref={textAreaRef}
+                className=" mx-auto table-fixed border  border-collapse p-4 scroll-smooth ">
+                <thead>
+                  <tr>
+                    <th className="border text-left p-4 w-1/4">City</th>
+                    <th className="border text-left  p-4 w-1/4 ">Time</th>
+                    <th className="border text-left  p-4 w-1/4">Country</th>
+                    <th className="border text-left  p-4 w-1/4">Population</th>
+                    {viewedCities.length > 0 && (
+                      <>
+                        <th className="border text-left p-4 w-1/4">
+                          Description
+                        </th>
+                        <th className="border text-left  p-4 w-1/4">
+                          Temperature
+                        </th>
+                        <th className="border text-left  p-4 w-1/4">
+                          Sunrise
+                        </th>
+                        <th className="border text-left  p-4 w-1/4">
+                          Sunset
+                        </th>
+                      </>
+                    )}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {mergedCities?.map((city: any, index: number) => {
+                    const viewedCity = viewedCities.find(
+                      (viewedCity: any) => viewedCity.name === city.name
+                    );
+                    return (
+                      <tr key={index}>
+                        <td
+                          className="border p-2 w-1/4 text-sm "
+                          onContextMenu={(e) =>
+                            openContextMenu(e, city.name, city)
+                          }>
+                          <Link
+                            href={{
+                              pathname: "/weather",
+                              query: {
+                                lon: city?.coordinates?.lon,
+                                lat: city?.coordinates?.lat,
+                                from: "city",
+                                name: city?.name,
+                              },
+                            }}>
+                            {city.name}
+                          </Link>
+                        </td>
+                        <td className="border p-4 w-1/4 text-sm  ">
+                          {city.timezone}
+                        </td>
+                        <td className="border p-4 w-1/4 text-sm  ">
+                          {city.cou_name_en}
+                        </td>
+                        <td className="border p-4 w-1/4 text-sm ">
+                          {city.population}
+                        </td>
+                        <td className="border p-4 w-1/4 text-sm capitalize">
+                          {viewedCity ? viewedCity.description : "-"}
+                        </td>
+                        <td className="border p-4 w-1/4 text-sm  ">
+                          {viewedCity ? viewedCity.temp : "-"}
+                        </td>
+                        <td className="border p-4 w-1/4 text-sm ">
+                          {viewedCity
+                            ? formatTime(
+                                viewedCity?.sunrise,
+                                viewedCity?.timeZone
+                              )
+                            : "-"}
+                        </td>
+                        <td className="border p-4 w-1/4 text-sm ">
+                          {viewedCity
+                            ? formatTime(
+                                viewedCity?.sunset,
+                                viewedCity?.timeZone
+                              )
+                            : "-"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
         </>
       ) : (

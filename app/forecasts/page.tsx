@@ -26,79 +26,46 @@ const initialContextMenu = {
 const Forecast = observer(({}: Props) => {
   const { getCityWeather } = useCurrentLocationWeather();
 
-  const {
-    userCityWeather,
-    selectedCityWeather,
-    isLoadingCurrLocWeather,
-    isLoadingSelectedCityWeather,
-  } = weatherState;
 
   const [isLoading, setisLoading] = useState(false);
-  const [forecastDay, setForecastDay] = useState();
   const [selectedTemp, setselectedTemp] = useState("C");
+  const [forecast, setForcast] = useState<[] | null>(null);
 
   const [showContextMenu, setShowContextMenu] = useState(initialContextMenu);
   const textAreaRef = useRef();
-  const search = useSearchParams();
-
-  const from = search.get("from");
-  const lon = search.get("lon");
-  const lat = search.get("lat");
 
   useEffect(() => {
-    if (!userCityWeather && from === "user") {
-      getCityWeather(lon, lat);
+    if (typeof window !== "undefined" && window.localStorage) {
+      const foreCastData = JSON.parse(localStorage.getItem("foreCast") || '"');
+      setForcast(foreCastData);
     }
+  }, []);
 
-    if (!selectedCityWeather && from !== "user") {
-      getCityWeather(lon, lat);
-      console.log("not from user");
-    }
-  }, [
-    userCityWeather,
-    selectedCityWeather,
-    isLoadingCurrLocWeather,
-    isLoadingSelectedCityWeather,
-  ]);
+
+  const weekDays = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
   useEffect(() => {
-    if (from === "user") {
-      setForecastDay(userCityWeather);
-    } else {
-      setForecastDay(selectedCityWeather);
-    }
-  }, [userCityWeather, selectedCityWeather, from]);
-  useEffect(() => {
-    // setisLoading(true);
-    if (userCityWeather) {
-      setisLoading(false);
-    } else if (userCityWeather && selectedCityWeather) {
+    if (forecast) {
       setisLoading(false);
     }
   }, []);
-  console.log(toJS(forecastDay));
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+  const formatDate = (dateString, index) => {
+    const date = new Date(dateString).getDate();
+    const dayInWeek = new Date().getDay();
+    const fordays = weekDays
+      .slice(dayInWeek, weekDays.length)
+      .concat(weekDays.slice(0, dayInWeek));
 
-    if (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    ) {
-      return "Today " + date.getDate();
-    } else if (
-      date.getDate() === tomorrow.getDate() &&
-      date.getMonth() === tomorrow.getMonth() &&
-      date.getFullYear() === tomorrow.getFullYear()
-    ) {
-      return "today" + date.getDate();
-    } else {
-      return date.getDate();
-    }
+    return `${fordays[index]}, ${date}`;
   };
 
   const contextMenuItems = [
@@ -128,9 +95,8 @@ const Forecast = observer(({}: Props) => {
     } else if (selectedTemp === "K") {
       return (convertedTemperature = `${(temperatureCelsius + 273.15).toFixed(
         2
-      )}K`); 
+      )}K`);
     }
-    console.log(convertedTemperature.toFixed(2));
     return `${convertedTemperature}°C`;
   }
 
@@ -182,13 +148,16 @@ const Forecast = observer(({}: Props) => {
             </ContextMenuTemp>
           )}
           <div className="flex flex-col justify-center my-8">
-            {forecastDay &&
-              forecastDay?.list?.map((item, index) => (
+            {forecast && (
+              <p className="text-center mb-6">{forecast[5]?.cityName}</p>
+            )}
+            {forecast &&
+              forecast?.slice(0, 5)?.map((item, index) => (
                 <>
                   <div
                     key={index}
                     className="flex justify-between items-center ">
-                    <p>{formatDate(item?.dt_txt)}</p>
+                    <p className="text-sm">{formatDate(item?.dt_txt, index)}</p>
                     <div className="flex items-center">
                       {" "}
                       <img
@@ -205,7 +174,7 @@ const Forecast = observer(({}: Props) => {
                       {convertTemperature(item?.main?.temp, selectedTemp)}
                     </p>
                   </div>
-                  {index !== forecastDay?.list?.length - 1 && (
+                  {index !== forecast?.length - 2 && (
                     <hr className="flex-grow border-t border-gray-300  my-7"></hr>
                   )}
                 </>
