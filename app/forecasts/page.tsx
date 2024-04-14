@@ -26,13 +26,12 @@ const initialContextMenu = {
 const Forecast = observer(({}: Props) => {
   const { getCityWeather } = useCurrentLocationWeather();
 
-
   const [isLoading, setisLoading] = useState(false);
   const [selectedTemp, setselectedTemp] = useState("C");
   const [forecast, setForcast] = useState<[] | null>(null);
 
   const [showContextMenu, setShowContextMenu] = useState(initialContextMenu);
-  const textAreaRef = useRef();
+  const textAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
@@ -40,7 +39,6 @@ const Forecast = observer(({}: Props) => {
       setForcast(foreCastData);
     }
   }, []);
-
 
   const weekDays = [
     "Monday",
@@ -58,7 +56,7 @@ const Forecast = observer(({}: Props) => {
     }
   }, []);
 
-  const formatDate = (dateString, index) => {
+  const formatDate = (dateString: string, index: number) => {
     const date = new Date(dateString).getDate();
     const dayInWeek = new Date().getDay();
     const fordays = weekDays
@@ -84,20 +82,19 @@ const Forecast = observer(({}: Props) => {
     contextMenuItems.push({ id: 3, label: "Celsius", value: "C" });
   }
 
-  function convertTemperature(temperatureCelsius, selectedTemp) {
+  function convertTemperature(
+    temperatureCelsius: number,
+    selectedTemp: string
+  ) {
     let convertedTemperature = temperatureCelsius;
-
     if (selectedTemp === "F") {
-      return (convertedTemperature = `${(
-        (temperatureCelsius * 9) / 5 +
-        32
-      ).toFixed(2)}F`);
+      convertedTemperature = (temperatureCelsius * 9) / 5 + 32;
+      return `${convertedTemperature.toFixed(2)}F`;
     } else if (selectedTemp === "K") {
-      return (convertedTemperature = `${(temperatureCelsius + 273.15).toFixed(
-        2
-      )}K`);
+      convertedTemperature = temperatureCelsius + 273.15;
+      return `${convertedTemperature.toFixed(2)}K`;
     }
-    return `${convertedTemperature}°C`;
+    return `${convertedTemperature.toFixed(2)}°C`;
   }
 
   const openContextMenu = (e: any) => {
@@ -149,7 +146,7 @@ const Forecast = observer(({}: Props) => {
           )}
           <div className="flex flex-col justify-center my-8">
             {forecast && (
-              <p className="text-center mb-6">{forecast[5]?.cityName}</p>
+              <p className="text-center font-bold mb-6">{forecast[5]?.cityName}</p>
             )}
             {forecast &&
               forecast?.slice(0, 5)?.map((item, index) => (

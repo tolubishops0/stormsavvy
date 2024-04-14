@@ -11,17 +11,11 @@ import newTab from "../../assest/new tab.png";
 import ContextNavBar from "../ContextMenu/ContextNavBar";
 import Link from "next/link";
 import useCurrentLocationWeather from "@/app/hooks/useCurrentLocationWeather";
-import { toJS } from "mobx";
 
 const initialContextMenu = {
   show: false,
   x: 0,
   y: 0,
-};
-
-type WeatherData = {
-  coord?: {};
-  name: string;
 };
 
 const NavBar = observer(() => {
@@ -58,8 +52,8 @@ const NavBar = observer(() => {
     },
   ];
 
-  const handleCitySelection = (lon: number, lat: number, name: number) => {
-    const url = `/weather?lon=${lon}&lat=${lat}&from=city&name=${name}`;
+  const handleCitySelection = (name: string) => {
+    const url = `/weather?&from=city&name=${name}`;
 
     window.location.href = url;
   };
@@ -91,7 +85,7 @@ const NavBar = observer(() => {
                 {" "}
                 {contextMenuItems.map((city, index) => (
                   <div
-                    className="flex gap-1 items-center cursor-pointer"
+                    className="flex gap-1 items-center cursor-pointer "
                     key={index}
                     onClick={() => {
                       city.onclick();
@@ -124,7 +118,7 @@ const NavBar = observer(() => {
                 onContextMenu={(e) =>
                   openContextMenu(e, userCityWeather?.city?.name)
                 }
-                className="flex gap-2 justify-center items-center">
+                className="flex gap-2 justify-center items-center ">
                 <span className="flex gap-2 items-center w-32">
                   <Image src={location} alt="" />
                   {userCityWeather ? (

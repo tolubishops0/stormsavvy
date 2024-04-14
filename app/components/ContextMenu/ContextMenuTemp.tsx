@@ -12,6 +12,7 @@ function ContextMenuTemp({ x, y, onCloseContextMenu, parentRef, children }: Prop
   const menuStyle = {
     top: `${y}px`,
     left: `${x}px`,
+    borderRadius: "8px",
   };
 
   useEffect(() => {

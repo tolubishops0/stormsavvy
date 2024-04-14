@@ -34,7 +34,7 @@ type tableData = {
   sunset: number;
   description: string;
   name: string;
-  timeZone: number
+  timeZone: number;
 };
 
 type Props = {
@@ -61,15 +61,12 @@ const WeatherDetail = observer(({}: Props) => {
   const lat = searchParams.get("lat");
   const from = searchParams.get("from");
   const cityname = searchParams.get("name");
-  // console.log(cityname, "from city name weather");
 
   const [list, setList] = useState([]);
   const [cityName, setcityName] = useState("");
   const [selectedTemp, setselectedTemp] = useState("C");
-
-  const [viewdTableData, setviewdTableData] = useState<tableData | null>(null);
   const [showContextMenu, setShowContextMenu] = useState(initialContextMenu);
-  const textAreaRef = useRef();
+  const textAreaRef = useRef<HTMLDivElement>(null);
 
   const contextMenuItems = [
     {
@@ -87,12 +84,17 @@ const WeatherDetail = observer(({}: Props) => {
     contextMenuItems.push({ id: 3, label: "Celsius", value: "C" });
   }
 
-  function convertTemperature(temperatureCelsius, selectedTemp) {
+  function convertTemperature(
+    temperatureCelsius: number,
+    selectedTemp: string
+  ) {
     let convertedTemperature = temperatureCelsius;
     if (selectedTemp === "F") {
-      return (convertedTemperature = `${(temperatureCelsius * 9) / 5 + 32}F`); // Celsius to Fahrenheit
+      convertedTemperature = (temperatureCelsius * 9) / 5 + 32;
+      return `${convertedTemperature}F`; // Celsius to Fahrenheit
     } else if (selectedTemp === "K") {
-      return (convertedTemperature = `${temperatureCelsius + 273.15}K`); // Celsius to Kelvin
+      convertedTemperature = temperatureCelsius + 273.15; // Celsius to Kelvin
+      return `${convertedTemperature}K`;
     }
     convertedTemperature = Math.ceil(convertedTemperature);
     return `${convertedTemperature}°C`;
@@ -118,7 +120,6 @@ const WeatherDetail = observer(({}: Props) => {
   }, [userCityWeather, selectedCityWeather]);
 
   const addViewedCity = (selectedCityWeather: []) => {
-    console.log(toJS(selectedCityWeather), "selected weather");
     const newViewedCityData = {
       name: selectedCityWeather?.city?.name || null,
       temp: selectedCityWeather?.list[0]?.main?.temp || null,
@@ -141,7 +142,7 @@ const WeatherDetail = observer(({}: Props) => {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     const options = {
       weekday: "long",
       hour: "numeric",
@@ -151,7 +152,7 @@ const WeatherDetail = observer(({}: Props) => {
     return new Date(dateString).toLocaleString("en-US", options);
   };
 
-  const formatTime = (timeString, timezone) => {
+  const formatTime = (timeString: string, timezone: number) => {
     const options = {
       hour: "numeric",
       minute: "numeric",
@@ -213,8 +214,8 @@ const WeatherDetail = observer(({}: Props) => {
         {isLoadingCurrLocWeather || isLoadingSelectedCityWeather ? (
           <Loader />
         ) : (
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-            <div className="flex flex-col items-center justify-center w-[100%] md:w-[50%]">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
+            <div className="flex flex-col items-center justify-center w-[100%] lg:w-[30%]">
               {list?.length > 0 && (
                 <>
                   <div className="flex flex-col justify-center items-center">
@@ -263,7 +264,7 @@ const WeatherDetail = observer(({}: Props) => {
               )}
             </div>
             {list?.length > 1 && (
-              <div className="flex flex-col w-[100%] md:w-[50%]">
+              <div className="flex flex-col w-[100%] lg:w-[70%]">
                 <div>
                   <div className="flex items-center justify-between">
                     <div className="flex item-center gap-2 justify-start">
@@ -368,23 +369,3 @@ const WeatherDetail = observer(({}: Props) => {
   );
 });
 export default WeatherDetail;
-
-{
-  /* {list.length > 1 && (
-            <div>
-              <h2>Upcoming Forecasts</h2>
-              <ul>
-                {list.slice(1).map((item, index) => (
-                  <li key={index}>
-                    <img
-                      src={`https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`}
-                      alt={item.weather[0].description}
-                    />
-                    <p>{item.weather[0].description}</p>
-                    <p>{list[0]?.main?.temp}°C</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )} */
-}

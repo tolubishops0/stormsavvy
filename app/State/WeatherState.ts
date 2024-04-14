@@ -1,20 +1,24 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, observable, action } from "mobx";
+import { WeatherDataI, CityI, CoordI, CityListI, ListI } from "@/global";
 
 type DataTypes = {
-  weatherData: {};
-  cities: [];
+  weatherData: WeatherDataI;
+  cities: CityListI[];
   errors: string;
-  city: {};
-  coord: {};
+  city: CityI;
+  coord: CoordI;
+  list: ListI[] | any;
 };
 
 class WeatherState {
+  // @observable cities: DataTypes[] = [];
+
   userCityWeather: DataTypes | null = null;
   cities: DataTypes | [] = [];
   selectedCityWeather: DataTypes | null = null;
-  isLoadingCurrLocWeather = false;
-  isCitiesLoading = false;
-  isLoadingSelectedCityWeather = false;
+  isLoadingCurrLocWeather: boolean = false;
+  isCitiesLoading: boolean = false;
+  isLoadingSelectedCityWeather: boolean = false;
   errors: DataTypes | null = null;
 
   constructor() {
@@ -27,13 +31,14 @@ class WeatherState {
   ) => {
     this.userCityWeather = weatherData;
     this.isLoadingCurrLocWeather = isLoadingCurrLocWeather;
-    console.log(isLoadingCurrLocWeather);
+    // console.log(weatherData, "frm state");
   };
 
+  
   getCities = async (cities: DataTypes) => {
-    this.cities = cities;
+    this.cities.push(...cities)
     // this.isCitiesLoading = isCitiesLoading;
-    // console.log(isCitiesLoading, "from state");
+    // console.log(cities, "cities from state");
   };
 
   getSeletedCityWeather = async (

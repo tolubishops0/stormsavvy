@@ -4,24 +4,20 @@ import React, { useEffect, useState } from "react";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { observer } from "mobx-react-lite";
 import { useTheme } from "next-themes";
+import { toJS } from "mobx";
+import { CityListI } from "@/global";
 
 type Props = {
-  cityList: any[];
+  cityList: CityListI[];
   onSelect: any;
 };
 
 const SearchBar = observer(({ cityList, onSelect }: Props) => {
   const { resolvedTheme } = useTheme();
 
-  const [searchCity, setSearchCity] = useState("");
-
-  const handleOnSelect = (city: {
-    coordinates: { lon: number; lat: number };
-    name: string;
-  }) => {
-    const { lon, lat } = city.coordinates;
+  const handleOnSelect = (city: { name: string }) => {
     const cityName = city.name;
-    onSelect(lon, lat, cityName);
+    onSelect(cityName);
   };
 
   const styling = {
@@ -40,8 +36,8 @@ const SearchBar = observer(({ cityList, onSelect }: Props) => {
   return (
     <ReactSearchAutocomplete
       onSelect={handleOnSelect}
-      onSearch={setSearchCity}
-      value={searchCity}
+      // onSearch={setSearchCity}
+      // value={searchCity}
       styling={styling}
       items={cityList}
       placeholder="type to search"

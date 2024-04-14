@@ -72,6 +72,10 @@ const useCurrentLocationWeather = () => {
             response.data,
             isLoadingCurrLocWeather
           );
+          localStorage.setItem(
+            "viewed-cities",
+            JSON.stringify(response.data.list)
+          );
         })
         .catch((error) => {
           toast(error, error.message);
@@ -80,12 +84,9 @@ const useCurrentLocationWeather = () => {
     }
   }, [currLocation]);
 
-  // const getCityWeather = (latitude: number, longitude: number) => {
   const getCityWeather = (cityname: string) => {
     setisLoadingSelectedCityWeather(true);
-    // api.openweathermap.org/data/2.5/forecast/daily?lat={lat}&lon={lon}&cnt={cnt}&appid={API key}
     const url = `https://api.openweathermap.org/data/2.5/forecast?q=${cityname}&appid=${apiKey}`;
-    // const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&cnt=5&units=metric`;
     axios
       .get(url)
       .then((response) => {
@@ -148,7 +149,7 @@ const useCurrentLocationWeather = () => {
     const findClosestForecast = (groupedForecast) => {
       const cityName = groupedForecast[0]?.cityName;
       const closestForecasts = [{ cityName: cityName }];
-      groupedForecast.reverse(); 
+      groupedForecast.reverse();
       groupedForecast.forEach((group) => {
         const forecastsForDay = group.forecasts;
         const closestForecast = forecastsForDay.find((item) => {

@@ -29,27 +29,31 @@ const CityList = observer(({ show, y, x }: Props) => {
   const { isCitiesLoading } = useGetCities();
   const { cities } = weatherState;
 
-  const [sortDirection, setSortDirection] = useState("asc");
   const [cityList, setCityList] = useState([]);
   const [viewedCities, setViewedCities] = useState([]);
   const [showContextMenu, setShowContextMenu] = useState(initialContextMenu);
   const [selectedCity, setSelectedCity] = useState("");
-  const textAreaRef = useRef();
+  const textAreaRef = useRef<HTMLDivElement>(null);
+  const foreCaste = JSON.parse(localStorage.getItem("viewed-cities")) || null;
 
   useEffect(() => {
+    // if (foreCaste) {
     if (typeof window !== "undefined" && window.localStorage) {
       const foreCastData =
-        JSON.parse(localStorage.getItem("viewed-cities") || '"') || null;
-      setViewedCities(foreCastData);
+        JSON.parse(localStorage.getItem("viewed-cities") || '"') || "";
+      if (foreCaste?.length > 5) {
+        console.log(true);
+        setViewedCities(foreCastData);
+      }
     }
+    // }
   }, []);
 
   useEffect(() => {
     if (cities) {
       setCityList(cities);
     }
-  }, []);
-
+  }, [cities]);
 
   const mergedCities = [...cities, ...viewedCities];
   const contextMenuItems = [
@@ -90,7 +94,7 @@ const CityList = observer(({ show, y, x }: Props) => {
     setSelectedCity("");
   };
 
-  const formatTime = (timeString, timezone) => {
+  const formatTime = (timeString: string, timezone: number) => {
     const options = {
       hour: "numeric",
       minute: "numeric",
@@ -161,6 +165,7 @@ const CityList = observer(({ show, y, x }: Props) => {
                     const viewedCity = viewedCities.find(
                       (viewedCity: any) => viewedCity.name === city.name
                     );
+                    console.log(viewedCity, "viewedCity");
                     return (
                       <tr key={index}>
                         <td
@@ -190,28 +195,40 @@ const CityList = observer(({ show, y, x }: Props) => {
                         <td className="border p-4 w-1/4 text-sm ">
                           {city.population}
                         </td>
-                        <td className="border p-4 w-1/4 text-sm capitalize">
-                          {viewedCity ? viewedCity.description : "-"}
-                        </td>
-                        <td className="border p-4 w-1/4 text-sm  ">
-                          {viewedCity ? viewedCity.temp : "-"}
-                        </td>
-                        <td className="border p-4 w-1/4 text-sm ">
-                          {viewedCity
-                            ? formatTime(
-                                viewedCity?.sunrise,
-                                viewedCity?.timeZone
-                              )
-                            : "-"}
-                        </td>
-                        <td className="border p-4 w-1/4 text-sm ">
-                          {viewedCity
-                            ? formatTime(
-                                viewedCity?.sunset,
-                                viewedCity?.timeZone
-                              )
-                            : "-"}
-                        </td>
+
+                        {viewedCity ? (
+                          <td className="border p-4 w-1/4 text-sm capitalize">
+                            {" "}
+                            {viewedCity?.description}{" "}
+                          </td>
+                        ) : null}
+
+                        {viewedCity ? (
+                          <td className="border p-4 w-1/4 text-sm capitalize">
+                            {" "}
+                            {viewedCity?.temp}{" "}
+                          </td>
+                        ) : null}
+
+                        {viewedCity ? (
+                          <td className="border p-4 w-1/4 text-sm capitalize">
+                            {" "}
+                            {formatTime(
+                              viewedCity?.sunrise,
+                              viewedCity?.timeZone
+                            )}{" "}
+                          </td>
+                        ) : null}
+
+                        {viewedCity ? (
+                          <td className="border p-4 w-1/4 text-sm capitalize">
+                            {" "}
+                            {formatTime(
+                              viewedCity?.sunset,
+                              viewedCity?.timeZone
+                            )}{" "}
+                          </td>
+                        ) : null}
                       </tr>
                     );
                   })}

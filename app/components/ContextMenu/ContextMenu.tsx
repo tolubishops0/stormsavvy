@@ -19,7 +19,6 @@ function ContextMenu({ x, y, onCloseContextMenu, parentRef, children }: Props) {
     const clickListener = (event: MouseEvent) => {
       const menuParent = parentRef?.current;
       if (!menuParent || !menuParent.contains(event?.target)) {
-        console.log("tru");
         return;
       }
       onCloseContextMenu();

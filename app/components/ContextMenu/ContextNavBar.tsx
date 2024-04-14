@@ -8,10 +8,17 @@ type Props = {
   children: any;
 };
 
-function ContextNavBar({ x, y, onCloseContextMenu, parentRef, children }: Props) {
+function ContextNavBar({
+  x,
+  y,
+  onCloseContextMenu,
+  parentRef,
+  children,
+}: Props) {
   const menuStyle = {
     top: `${y}px`,
     left: `${x}px`,
+    borderRadius: "8px",
   };
 
   useEffect(() => {
