@@ -37,16 +37,15 @@ const CityList = observer(({ show, y, x }: Props) => {
   const foreCaste = JSON.parse(localStorage.getItem("viewed-cities")) || null;
 
   useEffect(() => {
-    // if (foreCaste) {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const foreCastData =
-        JSON.parse(localStorage.getItem("viewed-cities") || '"') || "";
-      if (foreCaste?.length > 5) {
-        console.log(true);
-        setViewedCities(foreCastData);
+    if (foreCaste) {
+      if (typeof window !== "undefined" && window.localStorage) {
+        const foreCastData =
+          JSON.parse(localStorage.getItem("viewed-cities") || '"') || "";
+        if (foreCaste?.length > 5) {
+          setViewedCities(foreCastData);
+        }
       }
     }
-    // }
   }, []);
 
   useEffect(() => {
