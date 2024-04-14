@@ -3,9 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { observer } from "mobx-react-lite";
-import useCurrentLocationWeather from "@/app/hooks/useCurrentLocationWeather";
 import { useTheme } from "next-themes";
-import Link from "next/link";
 
 type Props = {
   cityList: any[];
@@ -14,28 +12,17 @@ type Props = {
 
 const SearchBar = observer(({ cityList, onSelect }: Props) => {
   const { resolvedTheme } = useTheme();
-  const { getCityWeather } = useCurrentLocationWeather();
+
   const [searchCity, setSearchCity] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [cord, setCord] = useState({
-    lon: null,
-    lat: null,
-    cityName: null,
-  });
 
   const handleOnSelect = (city: {
     coordinates: { lon: number; lat: number };
+    name: string;
   }) => {
     const { lon, lat } = city.coordinates;
     const cityName = city.name;
     onSelect(lon, lat, cityName);
   };
-
-  useEffect(() => {
-    if (searchCity.trim() === "") {
-      setSearchResults([]);
-    }
-  }, [searchCity]);
 
   const styling = {
     border: resolvedTheme === "dark" ? "1px solid #fff" : "1px solid #000",

@@ -4,6 +4,8 @@ type DataTypes = {
   weatherData: {};
   cities: [];
   errors: string;
+  city: {};
+  coord: {};
 };
 
 class WeatherState {
@@ -25,6 +27,7 @@ class WeatherState {
   ) => {
     this.userCityWeather = weatherData;
     this.isLoadingCurrLocWeather = isLoadingCurrLocWeather;
+    console.log(isLoadingCurrLocWeather);
   };
 
   getCities = async (cities: DataTypes) => {

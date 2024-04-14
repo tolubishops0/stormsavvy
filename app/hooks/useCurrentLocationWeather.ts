@@ -51,7 +51,7 @@ const useCurrentLocationWeather = () => {
 
     const locationUpdate = setInterval(() => {
       navigator.geolocation.getCurrentPosition(handleSuccess, handleError);
-    }, 30000);
+    }, 300000);
 
     return () => clearInterval(locationUpdate);
   }, []);
@@ -166,7 +166,7 @@ const useCurrentLocationWeather = () => {
     const saveForecastToLocalStorage = (forecast) => {
       localStorage.setItem("foreCast", JSON.stringify(forecast));
     };
-    const getCityWeatherInterval = setInterval(fetchWeatherData, 120000);
+    const getCityWeatherInterval = setInterval(fetchWeatherData, 300000);
 
     return () => clearInterval(getCityWeatherInterval);
   };

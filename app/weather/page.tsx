@@ -100,7 +100,6 @@ const WeatherDetail = observer(({}: Props) => {
 
   useEffect(() => {
     if (cityname) {
-      console.log("city name is changed");
       getCityWeather(cityname);
     }
   }, [cityname]);

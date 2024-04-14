@@ -8,10 +8,10 @@ import ThemeSwitch from "./ThemToggle";
 import location from "../../assest/icons8-location-24.png";
 import Image from "next/image";
 import newTab from "../../assest/new tab.png";
-import { toJS } from "mobx";
 import ContextNavBar from "../ContextMenu/ContextNavBar";
 import Link from "next/link";
 import useCurrentLocationWeather from "@/app/hooks/useCurrentLocationWeather";
+import { toJS } from "mobx";
 
 const initialContextMenu = {
   show: false,
@@ -19,12 +19,9 @@ const initialContextMenu = {
   y: 0,
 };
 
-type Props = {
-  show: boolean;
-  x: number;
-  y: number;
-  lat: number;
-  lon: Number;
+type WeatherData = {
+  coord?: {};
+  name: string;
 };
 
 const NavBar = observer(() => {
@@ -34,7 +31,7 @@ const NavBar = observer(() => {
 
   const [showContextMenu, setShowContextMenu] = useState(initialContextMenu);
   const [currentCity, setcurrentCity] = useState("");
-  const textAreaRef = useRef();
+  const textAreaRef = useRef<HTMLDivElement>(null);
   const contextMenuItems = [
     {
       id: 0,
@@ -113,14 +110,19 @@ const NavBar = observer(() => {
             <ThemeSwitch />
             <div className="w-[90%] mx-auto flex md:flex-row justify-between items-center gap-4">
               <Link href={"/"}>
-                <div>Stormysavvy</div>
+                <div className="">Stormysavvy</div>
               </Link>
               <div className="hidden md:block md:w-[40%] ">
-                <SearchBar cityList={cities} onSelect={handleCitySelection} />
+                <SearchBar
+                  cityList={
+                    Array.isArray(cities) ? cities.map((city) => city) : []
+                  }
+                  onSelect={handleCitySelection}
+                />
               </div>
               <div
                 onContextMenu={(e) =>
-                  openContextMenu(e, userCityWeather?.city.name)
+                  openContextMenu(e, userCityWeather?.city?.name)
                 }
                 className="flex gap-2 justify-center items-center">
                 <span className="flex gap-2 items-center w-32">
@@ -132,13 +134,13 @@ const NavBar = observer(() => {
                         query: {
                           lon,
                           lat,
-                          name: userCityWeather?.city.name,
+                          name: userCityWeather?.city?.name,
                           from: "user",
                         },
                       }}>
                       <span className="flex gap-1 items-baseline">
-                        <p>{userCityWeather?.city.name},</p>
-                        <p> {userCityWeather?.city.country}</p>
+                        <p>{userCityWeather?.city?.name},</p>
+                        <p> {userCityWeather?.city?.country}</p>
                       </span>
                     </Link>
                   ) : (
@@ -155,7 +157,12 @@ const NavBar = observer(() => {
               </div>
             </div>
             <div className=" block md:hidden w-[90%]">
-              <SearchBar cityList={cities} onSelect={handleCitySelection} />
+              <SearchBar
+                cityList={
+                  Array.isArray(cities) ? cities.map((city) => city) : []
+                }
+                onSelect={handleCitySelection}
+              />
             </div>
           </div>
         </>

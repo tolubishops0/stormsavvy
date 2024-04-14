@@ -29,6 +29,8 @@ const CityList = observer(({ show, y, x }: Props) => {
   const { isCitiesLoading } = useGetCities();
   const { cities } = weatherState;
 
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [cityList, setCityList] = useState([]);
   const [viewedCities, setViewedCities] = useState([]);
   const [showContextMenu, setShowContextMenu] = useState(initialContextMenu);
   const [selectedCity, setSelectedCity] = useState("");
@@ -41,6 +43,13 @@ const CityList = observer(({ show, y, x }: Props) => {
       setViewedCities(foreCastData);
     }
   }, []);
+
+  useEffect(() => {
+    if (cities) {
+      setCityList(cities);
+    }
+  }, []);
+
 
   const mergedCities = [...cities, ...viewedCities];
   const contextMenuItems = [
@@ -72,7 +81,6 @@ const CityList = observer(({ show, y, x }: Props) => {
   const openContextMenu = (e: any, name: string, city: object) => {
     setSelectedCity(name);
     e.preventDefault();
-    console.log(toJS(city));
     const { pageY, pageX } = e;
     setShowContextMenu({ show: true, x: pageX, y: pageY });
   };
@@ -81,7 +89,6 @@ const CityList = observer(({ show, y, x }: Props) => {
     setShowContextMenu(initialContextMenu);
     setSelectedCity("");
   };
-  
 
   const formatTime = (timeString, timezone) => {
     const options = {
@@ -143,12 +150,8 @@ const CityList = observer(({ show, y, x }: Props) => {
                         <th className="border text-left  p-4 w-1/4">
                           Temperature
                         </th>
-                        <th className="border text-left  p-4 w-1/4">
-                          Sunrise
-                        </th>
-                        <th className="border text-left  p-4 w-1/4">
-                          Sunset
-                        </th>
+                        <th className="border text-left  p-4 w-1/4">Sunrise</th>
+                        <th className="border text-left  p-4 w-1/4">Sunset</th>
                       </>
                     )}
                   </tr>

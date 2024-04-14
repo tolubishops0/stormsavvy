@@ -18,12 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ThemeProvider>
-        <body className={inter.className} suppressHydrationWarning>
-          <NavBar suppressHydrationWarning />
-          {children}
-        </body>
-      </ThemeProvider>
+      <body>
+        <ThemeProvider>
+          <NavBar />
+          <main className={inter.className} suppressHydrationWarning>
+            {children}
+          </main>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
